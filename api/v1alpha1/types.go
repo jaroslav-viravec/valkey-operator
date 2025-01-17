@@ -46,8 +46,9 @@ type ValkeySpec struct {
 	// component.RetrySpec `json:",inline"`
 
 	// Add your own fields here, describing the deployment of the managed component.
-	Replicas int                `json:"replicas,omitempty"`
-	Metrics  *MetricsProperties `json:"metrics,omitempty"`
+	Replicas int                 `json:"replicas,omitempty"`
+	Metrics  *MetricsProperties  `json:"metrics,omitempty"`
+	Sentinel *SentinelProperties `json:"sentinel,omitempty"`
 }
 
 // MetricsProperties defines the properties for metrics configuration.
@@ -56,6 +57,11 @@ type MetricsProperties struct {
 	component.KubernetesContainerProperties `json:",inline"`
 	ServiceMonitor                          *MetricsServiceMonitorProperties `json:"monitor,omitempty"`
 	PrometheusRule                          *MetricsPrometheusRuleProperties `json:"prometheusRule,omitempty"`
+}
+
+// SentinelProperties defines the properties for sentinel configuration.
+type SentinelProperties struct {
+	Enabled bool `json:"enabled,omitempty"`
 }
 
 // MetricsPrometheusRuleProperties defines the properties for Prometheus rule configuration.

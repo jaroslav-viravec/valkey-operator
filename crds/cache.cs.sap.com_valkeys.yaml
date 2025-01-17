@@ -326,6 +326,13 @@ spec:
                 description: Add your own fields here, describing the deployment of
                   the managed component.
                 type: integer
+              sentinel:
+                description: SentinelProperties defines the properties for sentinel
+                  configuration.
+                properties:
+                  enabled:
+                    type: boolean
+                type: object
             type: object
           status:
             default:
