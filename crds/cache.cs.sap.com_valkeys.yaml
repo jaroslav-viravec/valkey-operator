@@ -45,6 +45,11 @@ spec:
             type: object
           spec:
             description: ValkeySpec defines the desired state of Valkey.
+            properties:
+              replicas:
+                description: Add your own fields here, describing the deployment of
+                  the managed component.
+                type: integer
             type: object
           status:
             default:

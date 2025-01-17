@@ -46,6 +46,7 @@ type ValkeySpec struct {
 	// component.RetrySpec `json:",inline"`
 
 	// Add your own fields here, describing the deployment of the managed component.
+	Replicas int `json:"replicas,omitempty"`
 }
 
 // ValkeyStatus defines the observed state of Valkey.

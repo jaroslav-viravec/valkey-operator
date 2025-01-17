@@ -17,6 +17,7 @@ limitations under the License.
 package operator
 
 import (
+	"embed"
 	"flag"
 
 	"github.com/pkg/errors"
@@ -27,12 +28,17 @@ import (
 
 	"github.com/sap/component-operator-runtime/pkg/component"
 	"github.com/sap/component-operator-runtime/pkg/manifests"
+	"github.com/sap/component-operator-runtime/pkg/manifests/helm"
 	"github.com/sap/component-operator-runtime/pkg/operator"
 
 	operatorv1alpha1 "github.com/jaroslav-viravec/valkey-operator/api/v1alpha1"
+	"github.com/jaroslav-viravec/valkey-operator/internal/transformer"
 )
 
 const Name = "valkey.cache.cs.sap.com"
+
+//go:embed all:data
+var data embed.FS
 
 type Options struct {
 	Name       string
@@ -104,11 +110,26 @@ func (o *Operator) GetUncacheableTypes() []client.Object {
 }
 
 func (o *Operator) Setup(mgr ctrl.Manager) error {
-	// Replace this by a real resource generator (e.g. HelmGenerator or KustomizeGenerator, or your own one).
-	resourceGenerator, err := manifests.NewDummyGenerator()
+	parameterTransformer, err := manifests.NewTemplateParameterTransformer(data, "data/parameters.yaml")
+	if err != nil {
+		return errors.Wrap(err, "error initializing parameter transformer")
+	}
+	objectTransformer := transformer.NewObjectTransformer()
+	resourceGenerator, err := helm.NewTransformableHelmGenerator(
+		data,
+		"data/charts/valkey",
+		mgr.GetClient(),
+	)
 	if err != nil {
 		return errors.Wrap(err, "error initializing resource generator")
 	}
+	resourceGenerator.
+		WithParameterTransformer(parameterTransformer).
+		WithObjectTransformer(objectTransformer)
+
+	// TODO: handle increases of persistence.size somehow (instead of making it immutable)
+	// this would require to recreate the statefulset (since persistentVolumeClaimTemplate is immutable)
+	// and to extend existing persistent volume claims (supposing that they are resizable)
 
 	if err := component.NewReconciler[*operatorv1alpha1.Valkey](
 		o.options.Name,
