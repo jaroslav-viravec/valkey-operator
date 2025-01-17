@@ -26,10 +26,13 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/sap/component-operator-runtime/pkg/component"
-	"github.com/sap/component-operator-runtime/pkg/manifests"
 	"github.com/sap/component-operator-runtime/pkg/operator"
 
 	operatorv1alpha1 "github.com/jaroslav-viravec/valkey-operator/api/v1alpha1"
+	"helm.sh/helm/v3/pkg/action"
+	"helm.sh/helm/v3/pkg/chart/loader"
+	"helm.sh/helm/v3/pkg/cli"
+	"os"
 )
 
 const Name = "valkey.cache.cs.sap.com"
@@ -104,15 +107,35 @@ func (o *Operator) GetUncacheableTypes() []client.Object {
 }
 
 func (o *Operator) Setup(mgr ctrl.Manager) error {
-	// Replace this by a real resource generator (e.g. HelmGenerator or KustomizeGenerator, or your own one).
-	resourceGenerator, err := manifests.NewDummyGenerator()
+	// Use Helm client to deploy the Bitnami Valkey Helm chart.
+	settings := cli.New()
+	actionConfig := new(action.Configuration)
+	if err := actionConfig.Init(settings.RESTClientGetter(), settings.Namespace(), os.Getenv("HELM_DRIVER"), func(format string, v ...interface{}) {}); err != nil {
+		return errors.Wrap(err, "error initializing Helm action configuration")
+	}
+
+	client := action.NewInstall(actionConfig)
+	client.ReleaseName = "valkey"
+	client.Namespace = settings.Namespace()
+
+	chartPath, err := client.LocateChart("bitnami/valkey", settings)
 	if err != nil {
-		return errors.Wrap(err, "error initializing resource generator")
+		return errors.Wrap(err, "error locating Helm chart")
+	}
+
+	chart, err := loader.Load(chartPath)
+	if err != nil {
+		return errors.Wrap(err, "error loading Helm chart")
+	}
+
+	_, err = client.Run(chart, nil)
+	if err != nil {
+		return errors.Wrap(err, "error installing Helm chart")
 	}
 
 	if err := component.NewReconciler[*operatorv1alpha1.Valkey](
 		o.options.Name,
-		resourceGenerator,
+		nil,
 		component.ReconcilerOptions{},
 	).SetupWithManager(mgr); err != nil {
 		return errors.Wrapf(err, "unable to create controller")
