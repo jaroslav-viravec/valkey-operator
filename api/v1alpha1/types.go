@@ -49,6 +49,8 @@ type ValkeySpec struct {
 	Replicas int                 `json:"replicas,omitempty"`
 	Metrics  *MetricsProperties  `json:"metrics,omitempty"`
 	Sentinel *SentinelProperties `json:"sentinel,omitempty"`
+	TLS      *TLSProperties      `json:"tls,omitempty"`
+	Binding  *BindingProperties  `json:"binding,omitempty"`
 }
 
 // MetricsProperties defines the properties for metrics configuration.
@@ -59,6 +61,24 @@ type MetricsProperties struct {
 	PrometheusRule                          *MetricsPrometheusRuleProperties `json:"prometheusRule,omitempty"`
 }
 
+// TLSProperties defines the properties for TLS configuration.
+type TLSProperties struct {
+	Enabled     bool                   `json:"enabled,omitempty"`
+	CertManager *CertManagerProperties `json:"certManager,omitempty"`
+}
+
+// CertManagerProperties models cert-manager related attributes
+type CertManagerProperties struct {
+	Issuer *ObjectReference `json:"issuer,omitempty"`
+}
+
+// ObjectReference models a reference to a Kubernetes object
+type ObjectReference struct {
+	Group string `json:"group,omitempty"`
+	Kind  string `json:"kind,omitempty"`
+	Name  string `json:"name,omitempty"`
+}
+
 // SentinelProperties defines the properties for sentinel configuration.
 type SentinelProperties struct {
 	Enabled bool `json:"enabled,omitempty"`
@@ -67,6 +87,11 @@ type SentinelProperties struct {
 // MetricsPrometheusRuleProperties defines the properties for Prometheus rule configuration.
 type MetricsPrometheusRuleProperties struct {
 	Enabled bool `json:"enabled,omitempty"`
+}
+
+// BindingProperties models custom properties for the generated binding secret
+type BindingProperties struct {
+	Template *string `json:"template,omitempty"`
 }
 
 // MetricsServiceMonitorProperties defines the properties for service monitor configuration.

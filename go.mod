@@ -3,6 +3,7 @@ module github.com/jaroslav-viravec/valkey-operator
 go 1.23.4
 
 require (
+	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/pkg/errors v0.9.1
 	github.com/sap/component-operator-runtime v0.3.64
 	k8s.io/api v0.32.0
@@ -14,13 +15,13 @@ require (
 	sigs.k8s.io/controller-runtime v0.19.4
 	sigs.k8s.io/controller-runtime/tools/setup-envtest v0.0.0-20250116140835-8f7e11443ece
 	sigs.k8s.io/controller-tools v0.16.5
+	sigs.k8s.io/yaml v1.4.0
 )
 
 require (
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.3.0 // indirect
-	github.com/Masterminds/sprig/v3 v3.3.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
@@ -94,5 +95,4 @@ require (
 	sigs.k8s.io/cli-utils v0.37.2 // indirect
 	sigs.k8s.io/json v0.0.0-20241010143419-9aa6b5e7a4b3 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.5.0 // indirect
-	sigs.k8s.io/yaml v1.4.0 // indirect
 )

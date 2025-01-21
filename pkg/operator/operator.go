@@ -35,7 +35,6 @@ import (
 	"github.com/jaroslav-viravec/valkey-operator/internal/transformer"
 )
 
-// const Name = "valkey.cache.cs.sap.com"
 const Name = "valkey-operator.cs.sap.com"
 
 //go:embed all:data

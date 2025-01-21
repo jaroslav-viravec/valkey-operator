@@ -46,6 +46,13 @@ spec:
           spec:
             description: ValkeySpec defines the desired state of Valkey.
             properties:
+              binding:
+                description: BindingProperties models custom properties for the generated
+                  binding secret
+                properties:
+                  template:
+                    type: string
+                type: object
               metrics:
                 description: MetricsProperties defines the properties for metrics
                   configuration.
@@ -330,6 +337,28 @@ spec:
                 description: SentinelProperties defines the properties for sentinel
                   configuration.
                 properties:
+                  enabled:
+                    type: boolean
+                type: object
+              tls:
+                description: TLSProperties defines the properties for TLS configuration.
+                properties:
+                  certManager:
+                    description: CertManagerProperties models cert-manager related
+                      attributes
+                    properties:
+                      issuer:
+                        description: ObjectReference models a reference to a Kubernetes
+                          object
+                        properties:
+                          group:
+                            type: string
+                          kind:
+                            type: string
+                          name:
+                            type: string
+                        type: object
+                    type: object
                   enabled:
                     type: boolean
                 type: object
