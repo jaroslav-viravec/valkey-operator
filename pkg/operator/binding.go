@@ -23,10 +23,10 @@ func reconcileBinding(ctx context.Context, client client.Client, valkey *operato
 		params["port"] = 6379
 		params["sentinelHost"] = fmt.Sprintf("valkey-%s.%s.svc.cluster.local", valkey.Name, valkey.Namespace)
 		params["sentinelPort"] = 26379
-		params["masterName"] = "mymaster"
+		params["primaryName"] = "myprimary"
 	} else {
-		params["masterHost"] = fmt.Sprintf("valkey-%s-master.%s.svc.cluster.local", valkey.Name, valkey.Namespace)
-		params["masterPort"] = 6379
+		params["primaryHost"] = fmt.Sprintf("valkey-%s-primary.%s.svc.cluster.local", valkey.Name, valkey.Namespace)
+		params["primaryPort"] = 6379
 		params["replicaHost"] = fmt.Sprintf("valkey-%s-replicas.%s.svc.cluster.local", valkey.Name, valkey.Namespace)
 		params["replicaPort"] = 6379
 	}

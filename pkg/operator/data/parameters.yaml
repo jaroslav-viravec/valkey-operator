@@ -27,7 +27,7 @@ pdb:
   minAvailable: "50%"
 {{- end }}
 
-master:
+primary:
   replicaCount: 1
   {{- with .nodeSelector }}
   nodeSelector:
@@ -235,14 +235,14 @@ extraDeploy:
     - '{{ printf "*.%s.%s.svc" $fullname .Namespace }}'
     - '{{ printf "*.%s.%s" $fullname .Namespace }}'
     - '{{ printf "*.%s" $fullname }}'
-    - '{{ printf "%s-master.%s.svc.cluster.local" $fullname .Namespace }}'
-    - '{{ printf "%s-master.%s.svc" $fullname .Namespace }}'
-    - '{{ printf "%s-master.%s" $fullname .Namespace }}'
-    - '{{ printf "%s-master" $fullname }}'
-    - '{{ printf "*.%s-master.%s.svc.cluster.local" $fullname .Namespace }}'
-    - '{{ printf "*.%s-master.%s.svc" $fullname .Namespace }}'
-    - '{{ printf "*.%s-master.%s" $fullname .Namespace }}'
-    - '{{ printf "*.%s-master" $fullname }}'
+    - '{{ printf "%s-primary.%s.svc.cluster.local" $fullname .Namespace }}'
+    - '{{ printf "%s-primary.%s.svc" $fullname .Namespace }}'
+    - '{{ printf "%s-primary.%s" $fullname .Namespace }}'
+    - '{{ printf "%s-primary" $fullname }}'
+    - '{{ printf "*.%s-primary.%s.svc.cluster.local" $fullname .Namespace }}'
+    - '{{ printf "*.%s-primary.%s.svc" $fullname .Namespace }}'
+    - '{{ printf "*.%s-primary.%s" $fullname .Namespace }}'
+    - '{{ printf "*.%s-primary" $fullname }}'
     - '{{ printf "%s-headless.%s.svc.cluster.local" $fullname .Namespace }}'
     - '{{ printf "%s-headless.%s.svc" $fullname .Namespace }}'
     - '{{ printf "%s-headless.%s" $fullname .Namespace }}'
