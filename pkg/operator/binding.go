@@ -5,17 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"text/template"
-
-	"k8s.io/apimachinery/pkg/types"
-
 	"github.com/Masterminds/sprig/v3"
-
+	operatorv1alpha1 "github.com/jaroslav-viravec/valkey-operator/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	kyaml "sigs.k8s.io/yaml"
-
-	operatorv1alpha1 "github.com/jaroslav-viravec/valkey-operator/api/v1alpha1"
+	"text/template"
 )
 
 func reconcileBinding(ctx context.Context, client client.Client, valkey *operatorv1alpha1.Valkey) error {
@@ -64,6 +60,7 @@ func reconcileBinding(ctx context.Context, client client.Client, valkey *operato
 			return err
 		}
 	} else {
+		fmt.Print("### Using default binding template")
 		if _, err := t.ParseFS(data, "data/binding.yaml"); err != nil {
 			return err
 		}

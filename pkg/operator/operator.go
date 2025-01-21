@@ -135,6 +135,8 @@ func (o *Operator) Setup(mgr ctrl.Manager) error {
 		o.options.Name,
 		resourceGenerator,
 		component.ReconcilerOptions{},
+	).WithPostReconcileHook(
+		reconcileBinding,
 	).SetupWithManager(mgr); err != nil {
 		return errors.Wrapf(err, "unable to create controller")
 	}
