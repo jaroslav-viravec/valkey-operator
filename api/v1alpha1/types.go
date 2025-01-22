@@ -17,43 +17,39 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 
+	prometheusv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	"github.com/sap/component-operator-runtime/pkg/component"
 	componentoperatorruntimetypes "github.com/sap/component-operator-runtime/pkg/types"
 )
 
 // ValkeySpec defines the desired state of Valkey.
 type ValkeySpec struct {
-	// Uncomment the following if you want to implement the PlacementConfiguration interface
-	// (that is, want to make deployment namespace and name configurable here in the spec, independently of
-	// the component's metadata.namespace and metadata.name).
-	// component.PlacementSpec                  `json:",inline"`
-	// Uncomment the following if you want to implement the ClientConfiguration interface
-	// (that is, want to allow remote deployments via a specified kubeconfig).
-	// Note, that when implementing the ClientConfiguration interface, then also the PlacementConfiguration
-	// interface should be implemented.
-	// component.ClientSpec        `json:",inline"`
-	// Uncomment the following if you want to implement the ImpersonationConfiguratio interface
-	// (that is, want to allow use a specified service account in the target namespace for the deployment).
-	// component.ImpersonationSpec `json:",inline"`
-	// Uncomment the following if you want to implement the RequeueConfiguration interface
-	// (that is, want to allow to override the default requeue interval of 10m).
-	// component.RequeueSpec `json:",inline"`
-	// Uncomment the following if you want to implement the RetryConfiguration interface
-	// (that is, want to allow to override the default retry interval, which equals the effective requeue interval).
-	// component.RetrySpec `json:",inline"`
-
-	// Add your own fields here, describing the deployment of the managed component.
-	Replicas int                 `json:"replicas,omitempty"`
-	Metrics  *MetricsProperties  `json:"metrics,omitempty"`
-	Sentinel *SentinelProperties `json:"sentinel,omitempty"`
-	TLS      *TLSProperties      `json:"tls,omitempty"`
-	Binding  *BindingProperties  `json:"binding,omitempty"`
+	Version string `json:"version,omitempty"`
+	// +kubebuilder:validation:Minimum=1
+	// +kubebuilder:default=1
+	Replicas                                int `json:"replicas,omitempty"`
+	component.KubernetesPodProperties       `json:",inline"`
+	component.KubernetesContainerProperties `json:",inline"`
+	Sidecars                                []corev1.Container     `json:"sidecars,omitempty"`
+	Sentinel                                *SentinelProperties    `json:"sentinel,omitempty"`
+	Metrics                                 *MetricsProperties     `json:"metrics,omitempty"`
+	TLS                                     *TLSProperties         `json:"tls,omitempty"`
+	Persistence                             *PersistenceProperties `json:"persistence,omitempty"`
+	Binding                                 *BindingProperties     `json:"binding,omitempty"`
 }
 
-// MetricsProperties defines the properties for metrics configuration.
+// SentinelProperties models attributes of the sentinel sidecar
+type SentinelProperties struct {
+	Enabled                                 bool `json:"enabled,omitempty"`
+	component.KubernetesContainerProperties `json:",inline"`
+}
+
+// MetricsProperties models attributes of the metrics exporter sidecar
 type MetricsProperties struct {
 	Enabled                                 bool `json:"enabled,omitempty"`
 	component.KubernetesContainerProperties `json:",inline"`
@@ -61,7 +57,24 @@ type MetricsProperties struct {
 	PrometheusRule                          *MetricsPrometheusRuleProperties `json:"prometheusRule,omitempty"`
 }
 
-// TLSProperties defines the properties for TLS configuration.
+type MetricsServiceMonitorProperties struct {
+	Enabled            bool                         `json:"enabled,omitempty"`
+	Interval           prometheusv1.Duration        `json:"interval,omitempty"`
+	ScrapeTimeout      prometheusv1.Duration        `json:"scrapeTimeout,omitempty"`
+	Relabellings       []prometheusv1.RelabelConfig `json:"relabellings,omitempty"`
+	MetricRelabellings []prometheusv1.RelabelConfig `json:"metricRelabelings,omitempty"`
+	HonorLabels        bool                         `json:"honorLabels,omitempty"`
+	AdditionalLabels   map[string]string            `json:"additionalLabels,omitempty"`
+	PodTargetLabels    []string                     `json:"podTargetLabels,omitempty"`
+}
+
+type MetricsPrometheusRuleProperties struct {
+	Enabled          bool                `json:"enabled,omitempty"`
+	AdditionalLabels map[string]string   `json:"additionalLabels,omitempty"`
+	Rules            []prometheusv1.Rule `json:"rules,omitempty"`
+}
+
+// TLSProperties models TLS settings of the redis services
 type TLSProperties struct {
 	Enabled     bool                   `json:"enabled,omitempty"`
 	CertManager *CertManagerProperties `json:"certManager,omitempty"`
@@ -79,24 +92,17 @@ type ObjectReference struct {
 	Name  string `json:"name,omitempty"`
 }
 
-// SentinelProperties defines the properties for sentinel configuration.
-type SentinelProperties struct {
-	Enabled bool `json:"enabled,omitempty"`
-}
-
-// MetricsPrometheusRuleProperties defines the properties for Prometheus rule configuration.
-type MetricsPrometheusRuleProperties struct {
-	Enabled bool `json:"enabled,omitempty"`
+// PersistenceProperties models persistence related attributes
+type PersistenceProperties struct {
+	Enabled      bool               `json:"enabled,omitempty"`
+	Size         *resource.Quantity `json:"size,omitempty"`
+	StorageClass string             `json:"storageClass,omitempty"`
+	ExtraVolumes []corev1.Volume    `json:"extraVolumes,omitempty"`
 }
 
 // BindingProperties models custom properties for the generated binding secret
 type BindingProperties struct {
 	Template *string `json:"template,omitempty"`
-}
-
-// MetricsServiceMonitorProperties defines the properties for service monitor configuration.
-type MetricsServiceMonitorProperties struct {
-	Enabled bool `json:"enabled,omitempty"`
 }
 
 // ValkeyStatus defines the observed state of Valkey.
