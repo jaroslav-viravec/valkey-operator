@@ -4,10 +4,10 @@ host: {{ .host }}
 port: {{ .port }}
 sentinelHost: {{ .sentinelHost }}
 sentinelPort: {{ .sentinelPort }}
-masterName: {{ .masterName }}
+primaryName: {{ .primaryName }}
 {{- else }}
-masterHost: {{ .masterHost }}
-masterPort: {{ .masterPort }}
+primaryHost: {{ .primaryHost }}
+primaryPort: {{ .primaryPort }}
 replicaHost: {{ .replicaHost }}
 replicaPort: {{ .replicaPort }}
 {{- end }}
