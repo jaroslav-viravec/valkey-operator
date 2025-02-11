@@ -50,11 +50,11 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
+	operatorv1alpha1 "github.com/jaroslav-viravec/valkey-operator/api/v1alpha1"
+	"github.com/jaroslav-viravec/valkey-operator/pkg/operator"
 	prometheusv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	"github.com/sap/component-operator-runtime/pkg/component"
 	"github.com/sap/go-generics/slices"
-	operatorv1alpha1 "github.com/jaroslav-viravec/valkey-operator/api/v1alpha1"
-	"github.com/jaroslav-viravec/valkey-operator/pkg/operator"
 )
 
 var enabled bool

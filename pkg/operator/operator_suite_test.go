@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sap/component-operator-runtime/pkg/component"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/sap/component-operator-runtime/pkg/component"
 
 	admissionv1 "k8s.io/api/admissionregistration/v1"
 	appsv1 "k8s.io/api/apps/v1"
