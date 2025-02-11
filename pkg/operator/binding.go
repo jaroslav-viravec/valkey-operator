@@ -1,3 +1,8 @@
+/*
+SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company and valkey-operator contributors
+SPDX-License-Identifier: Apache-2.0
+*/
+
 package operator
 
 import (
@@ -60,7 +65,6 @@ func reconcileBinding(ctx context.Context, client client.Client, valkey *operato
 			return err
 		}
 	} else {
-		fmt.Print("### Using default binding template")
 		if _, err := t.ParseFS(data, "data/binding.yaml"); err != nil {
 			return err
 		}

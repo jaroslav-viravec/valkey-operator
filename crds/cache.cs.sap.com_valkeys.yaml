@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.16.5
+    controller-gen.kubebuilder.io/version: v0.17.1
   name: valkeys.cache.cs.sap.com
 spec:
   group: cache.cs.sap.com
@@ -24,7 +24,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Valkey is the Schema for the valkeies API.
+        description: Valkey is the Schema for the valkey API
         properties:
           apiVersion:
             description: |-
@@ -44,7 +44,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: ValkeySpec defines the desired state of Valkey.
+            description: ValkeySpec defines the desired state of Valkey
             properties:
               affinity:
                 description: Affinity is a group of affinity scheduling rules.
@@ -5489,7 +5489,7 @@ spec:
                   type: object
                 type: array
               tls:
-                description: TLSProperties models TLS settings of the redis services
+                description: TLSProperties models TLS settings of the valkey services
                 properties:
                   certManager:
                     description: CertManagerProperties models cert-manager related
@@ -5729,7 +5729,7 @@ spec:
           status:
             default:
               observedGeneration: -1
-            description: ValkeyStatus defines the observed state of Valkey.
+            description: ValkeyStatus defines the observed state of Valkey
             properties:
               appliedGeneration:
                 format: int64

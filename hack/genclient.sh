@@ -44,7 +44,7 @@ ln -s "$BASEDIR"/api/v1alpha1 "$TEMPDIR"/apis/cache.cs.sap.com/v1alpha1
   github.com/jaroslav-viravec/valkey-operator/tmp/gen/apis/cache.cs.sap.com/v1alpha1
 
 find "$TEMPDIR"/pkg/client -name "*.go" -exec \
-  perl -pi -e "s#github\.com/jaroslav-viravec/valkey-operator/tmp/gen/apis/cache\.cs\.sap\.com/v1alpha1#github.com/jaroslav-viravec/valkey-operator/api/v1alpha1#g" \
+  perl -pi -e "s#github\.com/sap/valkey-operator/tmp/gen/apis/cache\.cs\.sap\.com/v1alpha1#github.com/jaroslav-viravec/valkey-operator/api/v1alpha1#g" \
   {} +
 
 rm -rf "$BASEDIR"/pkg/client

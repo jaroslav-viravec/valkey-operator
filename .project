@@ -11,7 +11,7 @@ image: valkey-operator:latest
 kind: Valkey
 kubernetesVersion: v0.32.0
 mutatingWebhookEnabled: false
-operatorName: valkey.cache.cs.sap.com
+operatorName: valkey-operator.cs.sap.com
 owner: SAP SE
 resource: valkeies
 spdxLicenseHeaders: false

@@ -1,17 +1,6 @@
 /*
-Copyright 2025 SAP SE.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company and valkey-operator contributors
+SPDX-License-Identifier: Apache-2.0
 */
 
 package v1alpha1
@@ -27,7 +16,7 @@ import (
 	componentoperatorruntimetypes "github.com/sap/component-operator-runtime/pkg/types"
 )
 
-// ValkeySpec defines the desired state of Valkey.
+// ValkeySpec defines the desired state of Valkey
 type ValkeySpec struct {
 	Version string `json:"version,omitempty"`
 	// +kubebuilder:validation:Minimum=1
@@ -74,7 +63,7 @@ type MetricsPrometheusRuleProperties struct {
 	Rules            []prometheusv1.Rule `json:"rules,omitempty"`
 }
 
-// TLSProperties models TLS settings of the redis services
+// TLSProperties models TLS settings of the valkey services
 type TLSProperties struct {
 	Enabled     bool                   `json:"enabled,omitempty"`
 	CertManager *CertManagerProperties `json:"certManager,omitempty"`
@@ -105,7 +94,7 @@ type BindingProperties struct {
 	Template *string `json:"template,omitempty"`
 }
 
-// ValkeyStatus defines the observed state of Valkey.
+// ValkeyStatus defines the observed state of Valkey
 type ValkeyStatus struct {
 	component.Status `json:",inline"`
 }
@@ -116,7 +105,7 @@ type ValkeyStatus struct {
 // +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
 // +genclient
 
-// Valkey is the Schema for the valkeies API.
+// Valkey is the Schema for the valkey API
 type Valkey struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -130,7 +119,7 @@ var _ component.Component = &Valkey{}
 
 // +kubebuilder:object:root=true
 
-// ValkeyList contains a list of Valkey.
+// ValkeyList contains a list of Valkey
 type ValkeyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
@@ -143,6 +132,14 @@ func (s *ValkeySpec) ToUnstructured() map[string]any {
 		panic(err)
 	}
 	return result
+}
+
+func (c *Valkey) GetDeploymentNamespace() string {
+	return c.Namespace
+}
+
+func (c *Valkey) GetDeploymentName() string {
+	return c.Name
 }
 
 func (c *Valkey) GetSpec() componentoperatorruntimetypes.Unstructurable {

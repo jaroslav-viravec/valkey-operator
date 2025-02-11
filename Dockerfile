@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM --platform=$BUILDPLATFORM golang:1.23.4 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.23.5 AS builder
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -16,6 +16,8 @@ COPY main.go main.go
 COPY api/ api/
 COPY pkg/ pkg/
 COPY crds/ crds/
+COPY internal/ internal/
+COPY tests/ tests/
 COPY Makefile Makefile
 
 # Run tests and build
