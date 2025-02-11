@@ -15,10 +15,10 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/sap/component-operator-runtime/pkg/component"
-	"github.com/sap/component-operator-runtime/pkg/manifests"
-	"github.com/sap/component-operator-runtime/pkg/manifests/helm"
-	"github.com/sap/component-operator-runtime/pkg/operator"
+	"github.com/jaroslav-viravec/component-operator-runtime/pkg/component"
+	"github.com/jaroslav-viravec/component-operator-runtime/pkg/manifests"
+	"github.com/jaroslav-viravec/component-operator-runtime/pkg/manifests/helm"
+	"github.com/jaroslav-viravec/component-operator-runtime/pkg/operator"
 
 	operatorv1alpha1 "github.com/jaroslav-viravec/valkey-operator/api/v1alpha1"
 	"github.com/jaroslav-viravec/valkey-operator/internal/transformer"
