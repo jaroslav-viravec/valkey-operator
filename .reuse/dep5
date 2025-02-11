@@ -24,11 +24,11 @@ Disclaimer: The code in this project may include calls to APIs ("API Calls") of
  you any rights to use or access any SAP External Product, or provide any third
  parties the right to use of access any SAP External Product, through API Calls.
 
-Files: ** 
+Files: **
 Copyright:  2025 SAP SE or an SAP affiliate company and valkey-operator contributors
-License: Apache-2.0
+License: APACHE-2.0
 
 Files: pkg/operator/data/charts/valkey/*
 Copyright: Copyright © 2025 VMware, Inc.
-License: Apache-2.0
+License: APACHE-2.0
 Comment: Helm chart from Bitnami copied from oci://registry-1.docker.io/bitnamicharts/valkey
