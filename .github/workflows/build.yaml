@@ -1,124 +1,83 @@
-name: Build artifacts
+name: Build Valkey Operator
 
 on:
-  push:
-    branches:
-    - main
-
-  pull_request:
-    branches:
-    - main
-
-concurrency: build-${{ github.ref }}
+  workflow_dispatch:
+    inputs:
+      operator_version:
+        description: "Operator image tag to publish (e.g. v0.1.0)"
+        required: true
+        default: "latest"
+      platforms:
+        description: "Target platforms (comma-separated)"
+        required: true
+        default: "linux/amd64,linux/arm64"
+      push_latest:
+        description: "Also tag as :latest"
+        type: boolean
+        required: false
+        default: false
 
 env:
   REGISTRY: ghcr.io
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
-  test:
-    name: Run tests
+  build:
     runs-on: ubuntu-24.04
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v7
-
-    - name: Setup go
-      uses: actions/setup-go@v7
-      with:
-        go-version-file: go.mod
-
-    - name: Check that license header boilerplate is correct
-      uses: sap/cs-actions/check-go-license-boilerplate@main
-      with:
-        boilerplate-path: hack/boilerplate.go.txt
-
-    - name: Check that license headers are correct
-      uses: sap/cs-actions/check-go-license-headers@main
-      with:
-        boilerplate-path: hack/boilerplate.go.txt
-
-    - name: Check that generated artifacts are up-to-date
-      run: |
-        make generate
-        echo "Running 'git status' ..."
-        if [ -z "$(git status --porcelain)" ]; then
-          echo "Generated artifacts are up-to-date."
-        else
-          >&2 echo "Generated artifacts are not up-to-date; probably 'make generate' was not run before committing."
-          exit 1
-        fi
-
-    - name: Check that manifests are up-to-date
-      run: |
-        make manifests
-        echo "Running 'git status' ..."
-        if [ -z "$(git status --porcelain)" ]; then
-          echo "Manifests are up-to-date."
-        else
-          >&2 echo "Manifests are not up-to-date; probably 'make manifests' was not run before committing."
-          exit 1
-        fi
-
-    - name: Run tests
-      run: |
-        make envtest
-        KUBEBUILDER_ASSETS=$(pwd)/bin/k8s/current E2E_ENABLED=${{ github.event_name == 'push' }} go test -count 1 ./...
-
-  build-docker:
-    name: Build Docker image
-    runs-on: ubuntu-24.04
-    needs: test
     permissions:
       contents: read
-    outputs:
-      image-archive: image.tar
-      image-repository: ${{ steps.prepare-repository-name.outputs.repository }}
-      image-tag: ${{ steps.extract-metadata.outputs.version }}
+      packages: write
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v7
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup Docker Buildx
-      uses: docker/setup-buildx-action@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-    - name: Prepare repository name
-      id: prepare-repository-name
-      run: |
-        repository=$REGISTRY/${{ github.repository }}
-        echo "repository=${repository,,}" >> $GITHUB_OUTPUT
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Extract metadata (tags, labels) for Docker
-      id: extract-metadata
-      uses: docker/metadata-action@v6
-      with:
-        images: ${{ steps.prepare-repository-name.outputs.repository }}
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build Docker image
-      uses: docker/build-push-action@v7
-      with:
-        platforms: linux/amd64,linux/arm64
-        context: .
-        cache-from: |
-          type=gha,scope=sha-${{ github.sha }}
-          type=gha,scope=${{ github.ref_name }}
-          type=gha,scope=${{ github.base_ref || 'main' }}
-          type=gha,scope=main
-        cache-to: |
-          type=gha,scope=sha-${{ github.sha }},mode=max
-          type=gha,scope=${{ github.ref_name }},mode=max
-        outputs: |
-          type=oci,dest=${{ runner.temp }}/image.tar
-        tags: ${{ steps.extract-metadata.outputs.tags }}
-        labels: ${{ steps.extract-metadata.outputs.labels }}
+      - name: Compute image and tags
+        id: meta
+        run: |
+          owner="${{ github.repository_owner }}"
+          image="${REGISTRY,,}/${owner,,}/valkey-operator"
+          ver="${{ inputs.operator_version }}"
+          {
+            echo "image=${image}"
+            echo "tags<<EOF"
+            echo "${image}:${ver}"
+            if [ "${{ inputs.push_latest }}" = "true" ]; then echo "${image}:latest"; fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
-    - name: Upload Docker image archive
-      uses: actions/upload-artifact@v7
-      with:
-        name: image.tar
-        path: ${{ runner.temp }}/image.tar
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: ${{ inputs.platforms }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha,scope=valkey-operator-${{ inputs.operator_version }}
+          cache-to: type=gha,mode=max,scope=valkey-operator-${{ inputs.operator_version }}
+
+      - name: Summary
+        run: |
+          {
+            echo "### Built Valkey Operator image"
+            echo ""
+            echo "**Version:** ${{ inputs.operator_version }}"
+            echo "**Platforms:** ${{ inputs.platforms }}"
+            echo ""
+            echo "Tags:"
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
